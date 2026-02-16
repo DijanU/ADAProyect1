@@ -1,0 +1,51 @@
+# Maquina de Turing Determinista - Sucesion de Fibonacci
+# Calcula F(n) dado n en representacion unaria
+#
+# Convencion:
+#   - Entrada: n en unario (ej: "111" = 3)
+#   - Salida: F(n) en unario
+#   - Separador entre numeros: "0"
+#   - Blanco: "_"
+
+name: "Fibonacci"
+
+# Conjunto de estados (Q)
+states:
+  - q0
+  - q_init
+  # TODO: agregar los estados intermedios de la MT
+  - q_accept
+  - q_reject
+
+# Alfabeto de entrada (Sigma)
+input_alphabet:
+  - "1"
+
+# Alfabeto de la cinta (Gamma)
+tape_alphabet:
+  - "1"
+  - "0"
+  - "_"
+
+# Estado inicial
+start_state: "q0"
+
+# Estado de aceptacion
+accept_state: "q_accept"
+
+# Estado de rechazo
+reject_state: "q_reject"
+
+# Simbolo blanco
+blank_symbol: "_"
+
+# Funcion de transicion (delta)
+# Formato: [estado_actual, simbolo_leido, estado_siguiente, simbolo_escrito, direccion]
+# Direccion: R (derecha), L (izquierda)
+transitions:
+  # TODO: definir las transiciones completas para calcular Fibonacci
+  # Ejemplo de formato:
+  # - ["q0", "1", "q_init", "1", "R"]
+  # - ["q0", "_", "q_accept", "_", "R"]  # F(0) = 0, cinta vacia
+  - ["q0", "_", "q_accept", "_", "R"]
+  - ["q0", "1", "q_init", "1", "R"]
