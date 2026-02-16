@@ -260,8 +260,8 @@ Pasos: ~50
 
 ## 👥 Autores
 
-- **Integrante 1**: [Nombre del Estudiante 1]
-- **Integrante 2**: [Nombre del Estudiante 2]
+- **Integrante 1**: [Luis Fransisco Padilla Juarez]
+- **Integrante 2**: [Jonathan Alejandro Díaz Tahuite]
 
 **Grupo ADA - Proyecto 1**  
 Universidad del Valle de Guatemala, Séptimo Semestre  
