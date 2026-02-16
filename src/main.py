@@ -44,8 +44,13 @@ def main():
 
         if result["accepted"]:
             output = result["tape"]
-            # Contar los 1s en la salida para mostrar el valor numerico
-            count = output.count("1")
+            # Limpiar separadores y contar solo los 1s al inicio (resultado final)
+            # Si hay separadores '0', contar solo hasta el primer separador
+            if '0' in output:
+                output_clean = output.split('0')[0]
+            else:
+                output_clean = output
+            count = output_clean.count("1")
             print(f"\nResultado numerico: F({len(entrada)}) = {count}")
         print()
 
