@@ -260,11 +260,11 @@ Pasos: ~50
 
 ## 👥 Autores
 
-- **Integrante 1**: [Nombre]
-- **Integrante 2**: [Nombre]
+- **Integrante 1**: [Nombre del Estudiante 1]
+- **Integrante 2**: [Nombre del Estudiante 2]
 
 **Grupo ADA - Proyecto 1**  
-Universidad, Septimo Semestre  
+Universidad del Valle de Guatemala, Séptimo Semestre  
 Febrero 2026
 
 ---
