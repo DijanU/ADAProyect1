@@ -208,30 +208,6 @@ Diagrama completo de estados y transiciones disponible en:
 
 ---
 
-## 📦 Entregables
-
-### ✅ Completados
-
-1. **Descripción de convenciones** → [docs/convenciones.md](docs/convenciones.md)
-2. **Diagrama de MT** → [docs/diagrama_maquina_turing.md](docs/diagrama_maquina_turing.md)
-3. **Archivo de configuración MT** → [machines/fibonacci.yaml](machines/fibonacci.yaml)
-4. **Programa Python**:
-   - ✅ Configuración desde archivo
-   - ✅ Ingreso de cadenas
-   - ✅ Visualización de estados
-5. **Análisis empírico**:
-   - ✅ Tabla de tiempos
-   - ✅ Gráficas de dispersión
-   - ✅ Regresión polinomial
-
-### 📌 Pendientes para Entrega Final
-
-- [ ] Verificar repositorio privado en GitHub
-- [ ] Confirmar commits de ambos integrantes
-- [ ] Enlace al repositorio en Canvas
-
----
-
 ## 🎥 Video de Presentacion
 
 El video de presentacion del proyecto se encuentra en: [https://youtu.be/EqJg5Z61zps](https://youtu.be/EqJg5Z61zps)
