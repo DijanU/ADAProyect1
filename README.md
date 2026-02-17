@@ -226,10 +226,15 @@ Diagrama completo de estados y transiciones disponible en:
 
 ### 📌 Pendientes para Entrega Final
 
-- [ ] Video de presentación (YouTube no listado)
 - [ ] Verificar repositorio privado en GitHub
 - [ ] Confirmar commits de ambos integrantes
 - [ ] Enlace al repositorio en Canvas
+
+---
+
+## 🎥 Video de Presentacion
+
+El video de presentacion del proyecto se encuentra en: [proyectoADA1_80mb.mp4](proyectoADA1_80mb.mp4)
 
 ---
 
