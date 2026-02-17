@@ -234,7 +234,7 @@ Diagrama completo de estados y transiciones disponible en:
 
 ## 🎥 Video de Presentacion
 
-El video de presentacion del proyecto se encuentra en: [proyectoADA1_80mb.mp4](proyectoADA1_80mb.mp4)
+El video de presentacion del proyecto se encuentra en: [https://youtu.be/EqJg5Z61zps](https://youtu.be/EqJg5Z61zps)
 
 ---
 
