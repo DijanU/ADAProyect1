@@ -45,7 +45,7 @@ def run_analysis(machine_path, test_inputs=None):
     machine = load_machine(machine_path)
 
     if test_inputs is None:
-        test_inputs = list(range(0, 16))
+        test_inputs = list(range(0, 13))
 
     # --- Entregable 5a: Listado de entradas y tiempos ---
     print("\n" + "=" * 70)
