@@ -19,15 +19,18 @@ def test_fibonacci():
     print()
     
     # Casos de prueba: (n, entrada, F(n) esperado)
-    # NOTA: Esta MT calcula correctamente F(0) a F(4)
-    # F(5) es una aproximación debido a limitaciones de la implementación
     test_cases = [
         (0, "", 0, "Caso base: F(0) = 0"),
         (1, "1", 1, "Caso base: F(1) = 1"),
         (2, "11", 1, "Caso base: F(2) = 1"),
         (3, "111", 2, "F(3) = 2"),
         (4, "1111", 3, "F(4) = 3"),
-        # (5, "11111", 5, "F(5) = 5 - aproximación"),
+        (5, "11111", 5, "F(5) = 5"),
+        (6, "111111", 8, "F(6) = 8"),
+        (7, "1111111", 13, "F(7) = 13"),
+        (8, "11111111", 21, "F(8) = 21"),
+        (9, "111111111", 34, "F(9) = 34"),
+        (10, "1111111111", 55, "F(10) = 55"),
     ]
     
     results = []
