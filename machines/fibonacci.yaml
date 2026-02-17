@@ -1,58 +1,64 @@
 # Maquina de Turing Determinista - Sucesion de Fibonacci
 # Calcula F(n) dado n en representacion unaria
 #
-# IMPLEMENTACION: Transiciones directas correctas para n=0 a n=7
-# Cada caso implementa correctamente la matematica: F(n) = F(n-1) + F(n-2)
-#
 # Convencion:
-#   - Entrada: n en unario (ej: "111" = 3) 
+#   - Entrada: n en unario (ej: "111" = 3)
 #   - Salida: F(n) en unario
+#   - Separador entre numeros: "0"
 #   - Blanco: "_"
+#   - Marcador izquierdo: "Y"
+#   - Marcador de copia: "X"
 #
-# Sucesion de Fibonacci:
-#   F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3, F(5)=5, F(6)=8, F(7)=13
+# Algoritmo:
+#   1. Setup: transforma 1^n en Y 1^(n-1) 0 1 0 _
+#      (Y=marcador, counter=n-1, a=F(1)=1, b=F(0)=0)
+#   2. Loop alternando:
+#      Phase A: b = a + b (b crece a la derecha)
+#      Phase B: a = a + b (a crece via shift-right)
+#   3. Resultado: en a (n impar) o b (n par)
+#
+# Formato cinta durante ejecucion:
+#   Y [counter] 0 [a] 0 [b] _
 
 name: "Fibonacci"
 
 states:
+  # Setup
   - q0
-  - q1_check
-  - q2_check
-  - q3_check
-  - q4_check
-  - q5_check
-  - q6_check
-  - q7_check
-  # Estados para F(2): borrar un 1
-  - q2_delete
-  # Estados para F(3): escribir 2
-  - q3_write
-  # Estados para F(4): escribir 3
-  - q4_goto_end
-  - q4_write
-  - q4_cont
-  # Estados para F(6): escribir 8
-  - q6_goto_end
-  - q6_write1
-  - q6_write2
-  - q6_write3
-  - q6_write4
-  - q6_write5
-  - q6_write6
-  # Estados para F(7): escribir 13
-  - q7_goto_end
-  - q7_write1
-  - q7_write2
-  - q7_write3
-  - q7_write4
-  - q7_write5
-  - q7_write6
-  - q7_write7
-  - q7_write8
-  - q7_write9
-  - q7_write10
-  - q7_write11
-  - q7_write12
+  - q_n1
+  - q_base1
+  - q_go_end
+  - q_write_a
+  - q_write_sep2
+  - q_setup_rew
+  # Counter decrement
+  - q_dec_a
+  - q_dec_b
+  # Navigation to blocks
+  - q_nav_a
+  - q_nav_b1
+  - q_nav_b2
+  # Phase A: add a to b
+  - q_a_mark
+  - q_a_to_b
+  - q_a_ret
+  - q_a_unmark
+  - q_a_to_rew
+  # Phase B: add b to a (with shift)
+  - q_b_mark
+  - q_b_go_sep
+  - q_b_carry_0
+  - q_b_carry_1
+  - q_b_carry_X
+  - q_b_ret
+  - q_b_unmark
+  - q_b_to_rew
+  # Result extraction
+  - q_res_a
+  - q_res_a_erase
+  - q_res_b
+  - q_res_b_done
+  # Terminal
   - q_accept
   - q_reject
 
@@ -61,72 +67,180 @@ input_alphabet:
 
 tape_alphabet:
   - "1"
+  - "0"
   - "_"
+  - "X"
+  - "Y"
 
 start_state: "q0"
 accept_state: "q_accept"
 reject_state: "q_reject"
 blank_symbol: "_"
 
+# =============================================================================
+# TRANSICIONES (77 total)
+# =============================================================================
 transitions:
-  # === F(0) = 0 ===
+
+  # ===========================================================================
+  # SETUP: Inicializar cinta como Y [counter=n-1] 0 [a=1] 0 [b=vacio]
+  # ===========================================================================
+
+  # F(0) = 0: cinta vacia
   - ["q0", "_", "q_accept", "_", "R"]
-  
-  # === F(1) = 1 ===
-  - ["q0", "1", "q1_check", "1", "R"]
-  - ["q1_check", "_", "q_accept", "_", "L"]
-  
-  # === F(2) = 1 (borrar el segundo 1) ===
-  - ["q1_check", "1", "q2_check", "1", "R"]
-  - ["q2_check", "_", "q2_delete", "_", "L"]
-  - ["q2_delete", "1", "q_accept", "_", "L"]
-  
-  # === F(3) = 2 (dos unos) ===
-  - ["q2_check", "1", "q3_check", "1", "R"]
-  - ["q3_check", "_", "q3_write", "_", "L"]
-  - ["q3_write", "1", "q_accept", "1", "R"]
-  
-  # === F(4) = 3 (tres unos) ===
-  - ["q3_check", "1", "q4_check", "1", "R"]
-  - ["q4_check", "_", "q4_goto_end", "_", "L"]
-  - ["q4_goto_end", "1", "q4_goto_end", "1", "R"]
-  - ["q4_goto_end", "_", "q4_write", "1", "L"]
-  - ["q4_write", "1", "q4_cont", "1", "L"]
-  - ["q4_cont", "1", "q_accept", "1", "R"]
-  
-  # === F(5) = 5 (cinco unos) ===
-  # Para n=5, F(5) = 5, la entrada ya tiene 5 unos, solo aceptar
-  - ["q4_check", "1", "q5_check", "1", "R"]
-  - ["q5_check", "_", "q_accept", "_", "L"]
-  
-  # === F(6) = 8 (ocho unos) ===
-  - ["q5_check", "1", "q6_check", "1", "R"]
-  - ["q6_check", "_", "q6_goto_end", "_", "L"]
-  - ["q6_goto_end", "1", "q6_goto_end", "1", "R"]
-  - ["q6_goto_end", "_", "q6_write1", "1", "R"]
-  - ["q6_write1", "_", "q6_write2", "1", "R"]
-  - ["q6_write2", "_", "q6_write3", "1", "R"]
-  - ["q6_write3", "_", "q6_write4", "1", "R"]
-  - ["q6_write4", "_", "q6_write5", "1", "R"]
-  - ["q6_write5", "_", "q6_write6", "1", "L"]
-  - ["q6_write6", "1", "q6_write6", "1", "L"]
-  - ["q6_write6", "_", "q_accept", "_", "R"]
-  
-  # === F(7) = 13 (trece unos) ===
-  - ["q6_check", "1", "q7_check", "1", "R"]
-  - ["q7_check", "_", "q7_goto_end", "_", "L"]
-  - ["q7_goto_end", "1", "q7_goto_end", "1", "R"]
-  - ["q7_goto_end", "_", "q7_write1", "1", "R"]
-  - ["q7_write1", "_", "q7_write2", "1", "R"]
-  - ["q7_write2", "_", "q7_write3", "1", "R"]
-  - ["q7_write3", "_", "q7_write4", "1", "R"]
-  - ["q7_write4", "_", "q7_write5", "1", "R"]
-  - ["q7_write5", "_", "q7_write6", "1", "R"]
-  - ["q7_write6", "_", "q7_write7", "1", "R"]
-  - ["q7_write7", "_", "q7_write8", "1", "R"]
-  - ["q7_write8", "_", "q7_write9", "1", "R"]
-  - ["q7_write9", "_", "q7_write10", "1", "R"]
-  - ["q7_write10", "_", "q7_write11", "1", "R"]
-  - ["q7_write11", "_", "q7_write12", "1", "L"]
-  - ["q7_write12", "1", "q7_write12", "1", "L"]
-  - ["q7_write12", "_", "q_accept", "_", "R"]
+
+  # n >= 1: marcar Y en posicion 0
+  - ["q0", "1", "q_n1", "Y", "R"]
+
+  # F(1) = 1: restaurar Y -> 1
+  - ["q_n1", "_", "q_base1", "_", "L"]
+  - ["q_base1", "Y", "q_accept", "1", "R"]
+
+  # n >= 2: ir al final de la entrada
+  - ["q_n1", "1", "q_go_end", "1", "R"]
+  - ["q_go_end", "1", "q_go_end", "1", "R"]
+
+  # Al final: escribir separador, a=1, separador
+  - ["q_go_end", "_", "q_write_a", "0", "R"]
+  - ["q_write_a", "_", "q_write_sep2", "1", "R"]
+  - ["q_write_sep2", "_", "q_setup_rew", "0", "L"]
+
+  # Rebobinar hasta Y para iniciar el loop
+  - ["q_setup_rew", "0", "q_setup_rew", "0", "L"]
+  - ["q_setup_rew", "1", "q_setup_rew", "1", "L"]
+  - ["q_setup_rew", "Y", "q_dec_a", "Y", "R"]
+
+  # ===========================================================================
+  # DECREMENT COUNTER -> PHASE A
+  # Busca primer '1' del counter, lo marca X, luego navega a bloque a
+  # Si counter=0 (solo Xs), resultado esta en a
+  # ===========================================================================
+
+  - ["q_dec_a", "X", "q_dec_a", "X", "R"]
+  - ["q_dec_a", "1", "q_nav_a", "X", "R"]
+  - ["q_dec_a", "0", "q_res_a", "_", "R"]
+
+  # Navegar: saltar resto del counter hasta separador -> bloque a
+  - ["q_nav_a", "X", "q_nav_a", "X", "R"]
+  - ["q_nav_a", "1", "q_nav_a", "1", "R"]
+  - ["q_nav_a", "0", "q_a_mark", "0", "R"]
+
+  # ===========================================================================
+  # PHASE A: b = a + b (sumar a a b, b crece a la derecha)
+  # Para cada '1' en a: marcar X, ir al final de b, escribir '1'
+  # Al terminar, desmarcar X -> 1 en a
+  # ===========================================================================
+
+  # Buscar proximo '1' sin marcar en a
+  - ["q_a_mark", "X", "q_a_mark", "X", "R"]
+  - ["q_a_mark", "1", "q_a_to_b", "X", "R"]
+  - ["q_a_mark", "0", "q_a_unmark", "0", "L"]
+
+  # Ir al final de b (saltar resto de a, separador, b entera)
+  - ["q_a_to_b", "X", "q_a_to_b", "X", "R"]
+  - ["q_a_to_b", "1", "q_a_to_b", "1", "R"]
+  - ["q_a_to_b", "0", "q_a_to_b", "0", "R"]
+  - ["q_a_to_b", "_", "q_a_ret", "1", "L"]
+
+  # Volver a Y para regresar a bloque a
+  - ["q_a_ret", "1", "q_a_ret", "1", "L"]
+  - ["q_a_ret", "0", "q_a_ret", "0", "L"]
+  - ["q_a_ret", "X", "q_a_ret", "X", "L"]
+  - ["q_a_ret", "Y", "q_nav_a", "Y", "R"]
+
+  # Desmarcar: X -> 1 hacia la izquierda en a
+  - ["q_a_unmark", "X", "q_a_unmark", "1", "L"]
+  - ["q_a_unmark", "0", "q_a_to_rew", "0", "L"]
+
+  # Rebobinar a Y para ir a Phase B
+  - ["q_a_to_rew", "X", "q_a_to_rew", "X", "L"]
+  - ["q_a_to_rew", "1", "q_a_to_rew", "1", "L"]
+  - ["q_a_to_rew", "Y", "q_dec_b", "Y", "R"]
+
+  # ===========================================================================
+  # DECREMENT COUNTER -> PHASE B
+  # Si counter=0, resultado esta en b
+  # ===========================================================================
+
+  - ["q_dec_b", "X", "q_dec_b", "X", "R"]
+  - ["q_dec_b", "1", "q_nav_b1", "X", "R"]
+  - ["q_dec_b", "0", "q_res_b", "_", "R"]
+
+  # Navegar: saltar counter + sep (-> a) + a + sep (-> b)
+  - ["q_nav_b1", "X", "q_nav_b1", "X", "R"]
+  - ["q_nav_b1", "1", "q_nav_b1", "1", "R"]
+  - ["q_nav_b1", "0", "q_nav_b2", "0", "R"]
+  - ["q_nav_b2", "1", "q_nav_b2", "1", "R"]
+  - ["q_nav_b2", "0", "q_b_mark", "0", "R"]
+
+  # ===========================================================================
+  # PHASE B: a = a + b (sumar b a a, a crece via shift-right)
+  # Para cada '1' en b: marcar X, ir al separador a-b,
+  #   reemplazar sep con '1' (a crece), shift-right el resto
+  # Al terminar, desmarcar X -> 1 en b
+  # ===========================================================================
+
+  # Buscar proximo '1' sin marcar en b
+  - ["q_b_mark", "X", "q_b_mark", "X", "R"]
+  - ["q_b_mark", "1", "q_b_go_sep", "X", "L"]
+  - ["q_b_mark", "_", "q_b_unmark", "_", "L"]
+
+  # Retroceder hasta separador a-b
+  - ["q_b_go_sep", "X", "q_b_go_sep", "X", "L"]
+  - ["q_b_go_sep", "0", "q_b_carry_0", "1", "R"]
+
+  # --- Shift-right: empujar simbolos a la derecha ---
+  # carry = '0' (el separador desplazado)
+  - ["q_b_carry_0", "X", "q_b_carry_X", "0", "R"]
+  - ["q_b_carry_0", "1", "q_b_carry_1", "0", "R"]
+  - ["q_b_carry_0", "_", "q_b_ret", "0", "L"]
+
+  # carry = '1'
+  - ["q_b_carry_1", "1", "q_b_carry_1", "1", "R"]
+  - ["q_b_carry_1", "X", "q_b_carry_X", "1", "R"]
+  - ["q_b_carry_1", "0", "q_b_carry_0", "1", "R"]
+  - ["q_b_carry_1", "_", "q_b_ret", "1", "L"]
+
+  # carry = 'X'
+  - ["q_b_carry_X", "X", "q_b_carry_X", "X", "R"]
+  - ["q_b_carry_X", "1", "q_b_carry_1", "X", "R"]
+  - ["q_b_carry_X", "0", "q_b_carry_0", "X", "R"]
+  - ["q_b_carry_X", "_", "q_b_ret", "X", "L"]
+
+  # Shift completado: rebobinar a Y, luego navegar a b
+  - ["q_b_ret", "0", "q_b_ret", "0", "L"]
+  - ["q_b_ret", "1", "q_b_ret", "1", "L"]
+  - ["q_b_ret", "X", "q_b_ret", "X", "L"]
+  - ["q_b_ret", "Y", "q_nav_b1", "Y", "R"]
+
+  # Desmarcar: X -> 1 hacia la izquierda en b
+  - ["q_b_unmark", "X", "q_b_unmark", "1", "L"]
+  - ["q_b_unmark", "0", "q_b_to_rew", "0", "L"]
+
+  # Rebobinar a Y para siguiente iteracion (-> dec_a)
+  - ["q_b_to_rew", "1", "q_b_to_rew", "1", "L"]
+  - ["q_b_to_rew", "0", "q_b_to_rew", "0", "L"]
+  - ["q_b_to_rew", "X", "q_b_to_rew", "X", "L"]
+  - ["q_b_to_rew", "Y", "q_dec_a", "Y", "R"]
+
+  # ===========================================================================
+  # EXTRACCION DE RESULTADO
+  # ===========================================================================
+
+  # --- Resultado en a ---
+  # Estamos al inicio de a. Avanzar por a, luego borrar separador y b.
+  - ["q_res_a", "1", "q_res_a", "1", "R"]
+  - ["q_res_a", "0", "q_res_a_erase", "_", "R"]
+
+  # Borrar b (todo a la derecha)
+  - ["q_res_a_erase", "1", "q_res_a_erase", "_", "R"]
+  - ["q_res_a_erase", "_", "q_accept", "_", "R"]
+
+  # --- Resultado en b ---
+  # Estamos al inicio de a. Borrar a, luego borrar separador, mantener b.
+  - ["q_res_b", "1", "q_res_b", "_", "R"]
+  - ["q_res_b", "0", "q_res_b_done", "_", "R"]
+
+  # Avanzar por b (mantener), luego aceptar
+  - ["q_res_b_done", "1", "q_res_b_done", "1", "R"]
+  - ["q_res_b_done", "_", "q_accept", "_", "R"]
