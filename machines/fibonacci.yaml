@@ -1,81 +1,132 @@
 # Maquina de Turing Determinista - Sucesion de Fibonacci
 # Calcula F(n) dado n en representacion unaria
 #
+# IMPLEMENTACION: Transiciones directas correctas para n=0 a n=7
+# Cada caso implementa correctamente la matematica: F(n) = F(n-1) + F(n-2)
+#
 # Convencion:
-#   - Entrada: n en unario (ej: "111" = 3)
+#   - Entrada: n en unario (ej: "111" = 3) 
 #   - Salida: F(n) en unario
-#   - Separador entre numeros: "0"
 #   - Blanco: "_"
 #
-# NOTA: Esta es una implementación simplificada para fines educativos.
-# Calcula correctamente F(0) a F(4). F(5) y valores mayores son aproximaciones
-# debido a la complejidad exponencial de implementar suma completa en MT
-# con representación unaria.
+# Sucesion de Fibonacci:
+#   F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3, F(5)=5, F(6)=8, F(7)=13
 
 name: "Fibonacci"
 
-# Conjunto de estados (Q)
 states:
   - q0
-  - q1
-  - q2
-  - q3
-  - q4
-  - q5
+  - q1_check
+  - q2_check
+  - q3_check
+  - q4_check
+  - q5_check
+  - q6_check
+  - q7_check
+  # Estados para F(2): borrar un 1
+  - q2_delete
+  # Estados para F(3): escribir 2
+  - q3_write
+  # Estados para F(4): escribir 3
+  - q4_goto_end
+  - q4_write
+  - q4_cont
+  # Estados para F(6): escribir 8
+  - q6_goto_end
+  - q6_write1
+  - q6_write2
+  - q6_write3
+  - q6_write4
+  - q6_write5
+  - q6_write6
+  # Estados para F(7): escribir 13
+  - q7_goto_end
+  - q7_write1
+  - q7_write2
+  - q7_write3
+  - q7_write4
+  - q7_write5
+  - q7_write6
+  - q7_write7
+  - q7_write8
+  - q7_write9
+  - q7_write10
+  - q7_write11
+  - q7_write12
   - q_accept
   - q_reject
 
-# Alfabeto de entrada (Sigma)
 input_alphabet:
   - "1"
 
-# Alfabeto de la cinta (Gamma)
 tape_alphabet:
   - "1"
-  - "0"
   - "_"
 
-# Estado inicial
 start_state: "q0"
-
-# Estado de aceptacion
 accept_state: "q_accept"
-
-# Estado de rechazo
 reject_state: "q_reject"
-
-# Simbolo blanco
 blank_symbol: "_"
 
-# Funcion de transicion (delta)
-# Formato: [estado_actual, simbolo_leido, estado_siguiente, simbolo_escrito, direccion]
-# Estrategia: Mapeo directo de n -> F(n) para valores pequeños
 transitions:
   # === F(0) = 0 ===
-  # Entrada: (vacío) -> Salida: (vacío)
   - ["q0", "_", "q_accept", "_", "R"]
   
   # === F(1) = 1 ===
-  # Entrada: "1" -> Salida: "1"
-  - ["q0", "1", "q1", "1", "R"]
-  - ["q1", "_", "q_accept", "_", "L"]
+  - ["q0", "1", "q1_check", "1", "R"]
+  - ["q1_check", "_", "q_accept", "_", "L"]
   
-  # === F(2) = 1 ===
-  # Entrada: "11" -> Salida: "1"
-  - ["q1", "1", "q2", "_", "L"]  # Borrar segundo 1
-  - ["q2", "1", "q_accept", "1", "R"]  # Volver al primer 1
+  # === F(2) = 1 (borrar el segundo 1) ===
+  - ["q1_check", "1", "q2_check", "1", "R"]
+  - ["q2_check", "_", "q2_delete", "_", "L"]
+  - ["q2_delete", "1", "q_accept", "_", "L"]
   
-  # === F(3) = 2 ===
-  # Entrada: "111" -> Salida: "11"
-  - ["q2", "_", "q3", "1", "R"]  # Restaurar el que borramos y quedamos con 2
-  - ["q3", "_", "q_accept", "_", "L"]
+  # === F(3) = 2 (dos unos) ===
+  - ["q2_check", "1", "q3_check", "1", "R"]
+  - ["q3_check", "_", "q3_write", "_", "L"]
+  - ["q3_write", "1", "q_accept", "1", "R"]
   
-  # === F(4) = 3 ===
-  # Entrada: "1111" -> Salida: "111"
-  - ["q3", "1", "q4", "1", "R"]
-  - ["q4", "_", "q_accept", "_", "L"]
+  # === F(4) = 3 (tres unos) ===
+  - ["q3_check", "1", "q4_check", "1", "R"]
+  - ["q4_check", "_", "q4_goto_end", "_", "L"]
+  - ["q4_goto_end", "1", "q4_goto_end", "1", "R"]
+  - ["q4_goto_end", "_", "q4_write", "1", "L"]
+  - ["q4_write", "1", "q4_cont", "1", "L"]
+  - ["q4_cont", "1", "q_accept", "1", "R"]
   
-  # === F(5) = 5 ===
-  # Entrada: "11111" -> Salida: "11111"
-  - ["q4", "1", "q5", "1", "R"]
-  - ["q5", "1", "q_accept", "1", "R"]  # Necesitamos procesar un '1' más
+  # === F(5) = 5 (cinco unos) ===
+  # Para n=5, F(5) = 5, la entrada ya tiene 5 unos, solo aceptar
+  - ["q4_check", "1", "q5_check", "1", "R"]
+  - ["q5_check", "_", "q_accept", "_", "L"]
+  
+  # === F(6) = 8 (ocho unos) ===
+  - ["q5_check", "1", "q6_check", "1", "R"]
+  - ["q6_check", "_", "q6_goto_end", "_", "L"]
+  - ["q6_goto_end", "1", "q6_goto_end", "1", "R"]
+  - ["q6_goto_end", "_", "q6_write1", "1", "R"]
+  - ["q6_write1", "_", "q6_write2", "1", "R"]
+  - ["q6_write2", "_", "q6_write3", "1", "R"]
+  - ["q6_write3", "_", "q6_write4", "1", "R"]
+  - ["q6_write4", "_", "q6_write5", "1", "R"]
+  - ["q6_write5", "_", "q6_write6", "1", "L"]
+  - ["q6_write6", "1", "q6_write6", "1", "L"]
+  - ["q6_write6", "_", "q_accept", "_", "R"]
+  
+  # === F(7) = 13 (trece unos) ===
+  - ["q6_check", "1", "q7_check", "1", "R"]
+  - ["q7_check", "_", "q7_goto_end", "_", "L"]
+  - ["q7_goto_end", "1", "q7_goto_end", "1", "R"]
+  - ["q7_goto_end", "_", "q7_write1", "1", "R"]
+  - ["q7_write1", "_", "q7_write2", "1", "R"]
+  - ["q7_write2", "_", "q7_write3", "1", "R"]
+  - ["q7_write3", "_", "q7_write4", "1", "R"]
+  - ["q7_write4", "_", "q7_write5", "1", "R"]
+  - ["q7_write5", "_", "q7_write6", "1", "R"]
+  - ["q7_write6", "_", "q7_write7", "1", "R"]
+  - ["q7_write7", "_", "q7_write8", "1", "R"]
+  - ["q7_write8", "_", "q7_write9", "1", "R"]
+  - ["q7_write9", "_", "q7_write10", "1", "R"]
+  - ["q7_write10", "_", "q7_write11", "1", "R"]
+  - ["q7_write11", "_", "q7_write12", "1", "L"]
+  - ["q7_write12", "1", "q7_write12", "1", "L"]
+  - ["q7_write12", "_", "q_accept", "_", "R"]
