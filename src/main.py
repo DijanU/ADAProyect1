@@ -34,10 +34,14 @@ def main():
             break
 
         # Validar que la entrada solo contenga simbolos del alfabeto de entrada
+        valid = True
         for char in entrada:
             if char not in machine.input_alphabet:
                 print(f"Error: simbolo '{char}' no pertenece al alfabeto de entrada {machine.input_alphabet}")
-                continue
+                valid = False
+                break
+        if not valid:
+            continue
 
         print()
         result = machine.run(entrada)
