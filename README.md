@@ -92,21 +92,22 @@ Escriba 'salir' para terminar.
 
 Cadena de entrada: 111
 
-==============================================
+============================================================
 SIMULACION DE MAQUINA DE TURING
-==============================================
+============================================================
 Entrada: '111'
 Estado inicial: q0
-----------------------------------------------
-Paso   0: Estado=q0              Cabeza=0    Cinta: [1] 1  1 
-Paso   1: Estado=q_check_one     Cabeza=1    Cinta:  1 [1] 1 
-Paso   2: Estado=q_check_two     Cabeza=2    Cinta:  1  1 [1]
+------------------------------------------------------------
+Paso    0: Estado=q0              Cabeza=0    Cinta: [1] 1  1
+Paso    1: Estado=q_n1            Cabeza=1    Cinta:  Y [1] 1
+Paso    2: Estado=q_go_end        Cabeza=2    Cinta:  Y  1 [1]
+Paso    3: Estado=q_go_end        Cabeza=3    Cinta:  Y  1  1 [_]
 ...
-----------------------------------------------
+------------------------------------------------------------
 Resultado: ACEPTADA
-Pasos totales: 8
-Cinta final: 11
-==============================================
+Pasos totales: 73
+Cinta final: YXX_11
+============================================================
 
 Resultado numerico: F(3) = 2
 ```
@@ -145,10 +146,11 @@ Los enteros no negativos se representan en **notación unaria**:
 
 ### Alfabeto de la Cinta
 
-- `1` - Dígito unario (representa una unidad)
-- `0` - Separador entre números
-- `_` - Blanco (celda vacía)
-- `X`, `A`, `B`, `C` - Marcadores temporales (uso interno)
+- `1` - Digito unario (representa una unidad)
+- `0` - Separador entre bloques
+- `_` - Blanco (celda vacia)
+- `X` - Marcador temporal (counter consumido / copia)
+- `Y` - Marcador de inicio de cinta
 
 ### Interpretación de Resultados
 
@@ -165,13 +167,13 @@ Documentación completa en: [docs/convenciones.md](docs/convenciones.md)
 
 ### Complejidad Temporal
 
-- **Casos base (n ≤ 2)**: **O(n)**
-  - Número constante de pasos proporcional al tamaño de entrada
-  
-- **Casos generales (n > 2)**: **O(n · F(n))**
-  - Cada iteración requiere operaciones sobre números de Fibonacci
-  - F(n) crece exponencialmente: F(n) ≈ φⁿ/√5 donde φ = (1+√5)/2 ≈ 1.618
-  - **Complejidad total**: **O(n · φⁿ)** ≈ **O(n · 1.618ⁿ)**
+- **Casos base (n <= 2)**: **O(n)**
+  - Numero constante de pasos proporcional al tamano de entrada
+
+- **Casos generales (n > 2)**: **O(n * F(n))**
+  - Cada iteracion alterna Phase A (b=a+b) y Phase B (a=a+b) con shift-right
+  - F(n) crece exponencialmente: F(n) ~ phi^n/sqrt(5) donde phi = (1+sqrt(5))/2
+  - **Complejidad total**: **O(n * phi^n)**
 
 ### Complejidad Espacial
 
@@ -194,14 +196,15 @@ Documentación detallada: [docs/analisis_asintotico.md](docs/analisis_asintotico
 Diagrama completo de estados y transiciones disponible en:
 - [docs/diagrama_maquina_turing.md](docs/diagrama_maquina_turing.md)
 
-**Estados principales**:
-- `q0`: Estado inicial
-- `q_check_one`, `q_check_two`: Verificación de casos base
-- `q_init_fib`: Inicialización de cálculo iterativo
-- `q_accept`: Estado de aceptación
-- `q_reject`: Estado de rechazo
+**Grupos de estados (31 total)**:
+- **Setup**: `q0`, `q_n1`, `q_base1`, `q_go_end`, `q_write_a`, `q_write_sep2`, `q_setup_rew`
+- **Counter/Navegacion**: `q_dec_a`, `q_dec_b`, `q_nav_a`, `q_nav_b1`, `q_nav_b2`
+- **Phase A (b=a+b)**: `q_a_mark`, `q_a_to_b`, `q_a_ret`, `q_a_unmark`, `q_a_to_rew`
+- **Phase B (a=a+b)**: `q_b_mark`, `q_b_go_sep`, `q_b_carry_0/1/X`, `q_b_ret`, `q_b_unmark`, `q_b_to_rew`
+- **Resultado**: `q_res_a`, `q_res_a_erase`, `q_res_b`, `q_res_b_done`
+- **Terminal**: `q_accept`, `q_reject`
 
-**Transiciones**: 50+ transiciones para manejar casos F(0) a F(5+)
+**Transiciones**: 76 transiciones. Calcula correctamente F(0) a F(14)+
 
 ---
 
@@ -234,8 +237,8 @@ Diagrama completo de estados y transiciones disponible en:
 
 ### F(0) = 0
 ```
-Entrada: (vacío)
-Salida: (vacío)
+Entrada: (vacio)
+Salida: (vacio)
 Pasos: 1
 ```
 
@@ -243,7 +246,14 @@ Pasos: 1
 ```
 Entrada: 11111
 Salida: 11111
-Pasos: ~50
+Pasos: 278
+```
+
+### F(10) = 55
+```
+Entrada: 1111111111
+Salida: 1111111111111111111111111111111111111111111111111111111
+Pasos: 11,108
 ```
 
 ---

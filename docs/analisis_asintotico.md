@@ -7,7 +7,7 @@ Este documento detalla el análisis teórico de la complejidad temporal y espaci
 - **Modelo**: Máquina de Turing Determinista de una cinta.
 - **Entrada**: $n$ en representación unaria (cadena de $n$ unos).
 - **Salida**: $F(n)$ en representación unaria.
-- **Alfabeto**: $\Sigma = \{1\}$, $\Gamma = \{1, 0, A, B, X, \_\}$.
+- **Alfabeto**: $\Sigma = \{1\}$, $\Gamma = \{1, 0, X, Y, \_\}$.
 
 ## 2. Complejidad Temporal (Time Complexity)
 
@@ -17,19 +17,20 @@ La complejidad temporal se define como el número de pasos que realiza la máqui
 Para los casos iniciales, la máquina realiza una cantidad de pasos constante o lineal:
 - **$F(0)$**: 1 paso.
 - **$F(1)$**: 2-3 pasos.
-- **$F(2)$**: ~5 pasos.
+- **$F(2)$**: 33 pasos.
 - Complejidad: $O(n)$
 
 ### Caso General ($n > 2$)
-En una implementación iterativa (que es la base de nuestra lógica aunque la MT simplificada use un mapeo), el cálculo de $F(n)$ requiere:
+En nuestra implementación iterativa, el cálculo de $F(n)$ requiere:
 1. Mantener dos valores previos $F(i-1)$ y $F(i-2)$.
 2. Sumarlos para obtener $F(i)$.
 3. Repetir el proceso $n-2$ veces.
 
-En una Máquina de Turing de una cinta, la suma unaria implica mover la cabeza de lectura/escritura a través de toda la cinta para copiar símbolos.
-- El tamaño del número de Fibonacci $F(n)$ crece de forma exponencial: $F(n) \approx \frac{\phi^n}{\sqrt{5}}$, donde $\phi \approx 1.618$.
-- En representación unaria, el número de símbolos en la cinta es proporcional al valor de $F(n)$.
-- Cada operación de suma/copia en una cinta requiere $O(	ext{longitud de cinta}^2)$ en el peor de los casos para una MT simple.
+En nuestra MT de una cinta, la suma unaria implica mover la cabeza de lectura/escritura a traves de toda la cinta para copiar simbolos:
+- El tamano del numero de Fibonacci $F(n)$ crece de forma exponencial: $F(n) \approx \frac{\phi^n}{\sqrt{5}}$, donde $\phi \approx 1.618$.
+- En representacion unaria, el numero de simbolos en la cinta es proporcional al valor de $F(n)$.
+- Phase A (b = a + b) requiere recorrer la cinta $O(F(i))$ veces por cada 1 de a.
+- Phase B (a = a + b) requiere shift-right de toda la cinta por cada 1 de b, con costo $O(F(i))$ por shift.
 
 Por lo tanto, la complejidad temporal total está dominada por el crecimiento exponencial de $F(n)$:
 $$T(n) = O(n \cdot F(n)) = O(n \cdot \phi^n)$$

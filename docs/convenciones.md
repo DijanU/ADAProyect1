@@ -19,12 +19,24 @@ Se utiliza **representacion unaria** para codificar los enteros no negativos:
 | `1`     | Digito unario (representa una unidad)            |
 | `0`     | Separador entre numeros en la cinta              |
 | `_`     | Blanco (celda vacia, delimita el espacio de trabajo) |
+| `X`     | Marcador temporal (counter consumido / copia)    |
+| `Y`     | Marcador de inicio de cinta (posicion 0)         |
 
-## Formato de la cinta
+## Formato de la cinta durante ejecucion
 
-La cinta utiliza `0` como separador entre los numeros representados en unario.
+La cinta se organiza en bloques separados por `0`:
 
-**Ejemplo:** Para calcular F(5), la entrada es `11111` (5 en unario). Al finalizar, la cinta contendra el resultado F(5) = 5 representado como `11111`.
+```
+Y [counter] 0 [a] 0 [b] _
+```
+
+- **Y**: Marcador de inicio de cinta.
+- **counter**: Contador de iteraciones restantes (n-2), se marca con `X` al consumir.
+- **a**: Valor de F(i-1) en unario.
+- **b**: Valor de F(i-2) en unario.
+- **0**: Separador entre bloques.
+
+**Ejemplo:** Para calcular F(5), la entrada es `11111` (5 en unario). Al finalizar, la cinta contendra el resultado F(5) = 5 representado como 5 simbolos `1`.
 
 ## Interpretacion de la respuesta
 
@@ -44,10 +56,10 @@ La maquina de Turing se define como la 7-tupla:
 **M = (Q, Sigma, Gamma, delta, q0, q_accept, q_reject)**
 
 Donde:
-- **Q**: Conjunto finito de estados
+- **Q**: Conjunto finito de 31 estados
 - **Sigma**: Alfabeto de entrada = {1}
-- **Gamma**: Alfabeto de la cinta = {1, 0, _}
-- **delta**: Funcion de transicion Q x Gamma -> Q x Gamma x {L, R}
+- **Gamma**: Alfabeto de la cinta = {1, 0, X, Y, _}
+- **delta**: Funcion de transicion Q x Gamma -> Q x Gamma x {L, R} (76 transiciones)
 - **q0**: Estado inicial
 - **q_accept**: Estado de aceptacion
 - **q_reject**: Estado de rechazo
